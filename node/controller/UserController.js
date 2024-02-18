@@ -2,10 +2,19 @@ const User = require('../model/User');
 
 const getUsers = async (req, res) => {
 
-  let users = await User.find(
-    { _id: { $ne: req.user.id } }
-  ).exec();
+  keyword = req.params.search;
+  const search = keyword
+    ? {
+      name: {
+        $regex: new RegExp(keyword, 'i')
+      }
+    }
+    : {};
 
+  let users = await User.find(
+    { _id: { $ne: req.user.id } },
+    search,
+  ).exec();
   return res.json({ users })
 }
 

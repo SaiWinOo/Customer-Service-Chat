@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input,
+textarea {
+  outline: none;
+}
+
+input {
+  @apply p-2 border-gray-100 border bg-white my-2 w-full;
+}
+
+button {
+  @apply !bg-primary w-full p-1.5 text-white rounded-sm;
+}
+.typingContainer {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+}
+
+.typingBubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @apply bg-white p-4 rounded-lg;
+}
+
+.typingIndicatorBubbleDot {
+  margin-right: 4px;
+  border-radius: 50%;
+  animation-name: bounce;
+  animation-duration: 1.3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  @apply p-1 bg-secondary;
+}
+
+.typingIndicatorBubbleDot:first-of-type {
+  margin: 0px 4px;
+}
+
+.typingIndicatorBubbleDot:nth-of-type(2) {
+  animation-delay: 0.15s;
+}
+
+.typingIndicatorBubbleDot:nth-of-type(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}

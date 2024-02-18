@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useContext, useEffect, useState } from 'react';
-import { Avatar, Box, Typography } from "@mui/material";
 import axios from "axios";
 import { getChatsApi, usersApi } from "@/api/api";
 import { useRouter } from "next/navigation";
@@ -14,7 +13,6 @@ const Conversations = ({ }) => {
   const router = useRouter();
   const { user } = useContext(AppContext);
 
-  console.log('fetching conversations');
 
   const getConversations = async () => {
     let res = await axios.get(getChatsApi);
@@ -53,39 +51,34 @@ const Conversations = ({ }) => {
   }, []);
 
   const Name = ({ conversation }) => {
-
-
-    return <Typography variant={'p'}>{getOtherUser(conversation.participants)?.name}</Typography>
+    return <p >{getOtherUser(conversation.participants)?.name}</p>
   }
 
   const Profile = ({ conversation }) => {
-    return <Avatar style={{ borderRadius: 5 }} src={getOtherUser(conversation.participants)?.profile} />;
+    return <img className="rounded-full w-[50px] h-[50px] " src={getOtherUser(conversation.participants)?.profile} />;
   }
+
   return (
-    <>
+    <div className="w-full border-r hidden lg:block">
       {
         conversations.map(conversation => (
-          <Box onClick={() => handleChangeChat(conversation)} key={conversation._id} sx={{
-            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2, padding: 2,
-            '&:hover': {
-              backgroundColor: '#00000020'
-            }
-          }}>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-
+          <div onClick={() => handleChangeChat(conversation)} key={conversation._id}
+            className="flex items-start justify-between gap-4 p-2 mb-2 px-5 hover:bg-gray-100"
+          >
+            <div className="flex gap-4" >
               <Profile conversation={conversation} />
-              <Box>
+              <div>
                 <Name conversation={conversation} />
-                <Typography variant={'body2'} color={'gray'}>{conversation.latestMessage?.message?.substring(0, 30)}...</Typography>
-              </Box>
-            </Box>
-            <Box>
-              <Typography variant={'body2'} color={'gray'}>{moment(conversation.latestMessage?.createdAt).fromNow()}</Typography>
-            </Box>
-          </Box>
+                <p className="text-gray-400 text-[13px]">{conversation.latestMessage?.message?.substring(0, 30)}...</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-gray-400 text-[12px]" >{moment(conversation.latestMessage?.createdAt).fromNow()}</p>
+            </div>
+          </div>
         ))
       }
-    </>
+    </div>
   );
 };
 

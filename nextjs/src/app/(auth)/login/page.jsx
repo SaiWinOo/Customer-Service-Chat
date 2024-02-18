@@ -1,74 +1,83 @@
 'use client';
 
-import React, {useContext, useEffect} from 'react';
-import {Alert, Button, CircularProgress, LinearProgress, Stack, TextField, Typography} from "@mui/material";
-import {Controller, useForm} from "react-hook-form";
+import React, { useContext, useEffect } from 'react';
+import { Controller, useForm } from "react-hook-form";
 import Link from "next/link";
-import {useMutation} from "react-query";
+import { useMutation } from "react-query";
 import axios from "axios";
-import {loginApi} from "@/api/api";
-import {AppContext} from "@/providers/AppProvider";
-import {useRouter} from "next/navigation";
+import { loginApi } from "@/api/api";
+import { AppContext } from "@/providers/AppProvider";
+import { useRouter } from "next/navigation";
+import Button from "@/component/common/Button";
 
 const Page = () => {
 
-    const {token} = useContext(AppContext);
+    const { token, setToken, setUser } = useContext(AppContext);
     const router = useRouter();
 
-    const {control, handleSubmit} = useForm({
-        defaultValues : {
-            email : '',
-            password : '',
+    const { control, handleSubmit } = useForm({
+        defaultValues: {
+            email: '',
+            password: '',
         }
     });
 
     const login = (data) => {
         return axios.post(loginApi, data);
     }
-    const {error,isError,isLoading,mutate} = useMutation(login,{
-        onSuccess : (data) => {
-            localStorage.setItem('_user',JSON.stringify(data.data.user));
-            localStorage.setItem('_token',data.data.token);
+    const { error, isError, isLoading, mutate } = useMutation(login, {
+        onSuccess: (data) => {
+            localStorage.setItem('_user', JSON.stringify(data.data.user));
+            localStorage.setItem('_token', data.data.token);
+            setUser(data.data.user);
+            setToken(data.data.token);
+            setTimeout(() => {
+                router.push('/chat');
+            }, 500);
         }
     });
 
     useEffect(() => {
-        if(token){
+        if (token) {
             return router.replace('/');
         }
     }, []);
 
     const onSubmit = (data) => {
+        console.log(data);
         mutate(data);
     }
     return (
-        <Stack flexDirection={'row'} justifyContent={'center'} height={'100vh'} alignItems={'center'}>
-            <Stack onSubmit={handleSubmit(onSubmit)} component={'form'} minWidth={{xs: 300, sm: 500}} flexDirection={'column'} gap={2} boxShadow={2}
-                   padding={5} textAlign={'center'}>
-                <Typography variant={'h5'} marginBottom={3}>Login</Typography>
-                {isError && <Alert>{error.response.data.message}</Alert>}
+        <div className="flex justify-center bg-secondary items-center h-full" >
+            <form
+                className="w-[400px] bg-white p-5 rounded-md"
+                onSubmit={handleSubmit(onSubmit)}
+            >
+                <p className="text-xl ">Login</p>
+                {isError && <p>{error.response.data.message}</p>}
                 <Controller
                     control={control}
                     name='email'
-                    render={({field}) => (
-                        <TextField {...field} label={'Email'} variant={'outlined'} size={'small'}/>
-                    )}/>
+                    render={({ field }) => (
+                        <input {...field} placeholder="example@gmail.com" />
+                    )} />
 
                 <Controller
                     control={control}
                     name='password'
-                    render={({field}) => (
-                        <TextField  {...field} type={'password'} label={'Password'} variant={'outlined'} size={'small'}/>
-                    )}/>
+                    render={({ field }) => (
+                        <input  {...field} type={'password'} placeholder="*******" />
+                    )} />
 
-                <Link href={'/register'}>
-                    <Typography textAlign={'end'} >Don't have an account? Register</Typography>
+                <Link href={'/register'}  >
+                    <p className="text-sm my-2 text-end text-gray-400" >Don't have an account? Register</p>
                 </Link>
-                <Button type={'submit'} variant={'contained'}>
-                    {isLoading ? <CircularProgress color={'warning'} size={25}/> : 'Login'}
+
+                <Button type={'submit'} loading={isLoading} >
+                    Login
                 </Button>
-            </Stack>
-        </Stack>
+            </form>
+        </div >
     );
 };
 
